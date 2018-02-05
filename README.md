@@ -5,7 +5,45 @@
 
 The main purpose of this library is to enable external repositories of parametrized messages for easy modification,
 localization, proof-reading, and automatic checking at build-time, as well as to provide convenient access to the
-messages from application code.
+messages from Java application code.
+
+## Example
+
+### Message Repository
+
+```java
+@CodeSpec(offset=20, pattern="BOR-{}")
+@MessageProperty(name="type", value="Error")
+public interface BooksBorrowingErrors {
+    
+    @MessageSpec(id=1, pattern="'{}' is currently not available")
+    Message bookUnavailable(String title);
+    
+    @MessageSpec(id=2, pattern="Attempt to borrow more than {} books")
+    Message attemptToBorrowMoreThanAllowed(int maxAllowed);
+}
+```
+
+### Application Code
+
+```java
+    BookBorrowingErrors borrowingErrors = Messages.from(BookBorrowingErrors.class);
+
+    Message unavailable = borrowingErrors.bookUnavailable("The Mythical Man-Month");
+    
+    // Prints "[BOR-21] 'The Mythical Man-Month' is currently not available" to stdout
+    System.out.printf("[%s] %s\n", unavailable.getCode(), unavailable.getMessage());
+    
+    Message reachedMaxBooks = borrowingErrors.attemptToBorrowMoreThanAllowed(12);
+    
+    // Logs "Attempt to borrow more than 12 books" in SLF4J format 
+    if ("Error".equals(reachedMaxBooks.getProperty("type")) {
+        LOGGER.error(reachedMaxBooks.getPattern(), reachedMaxBooks.getArguments());
+    }
+```
+
+Note, that in a real application `"type"` and `"Error"` will probably be constants. 
+The instance of `BookBorrowingErrors` is also likely to be kept in a constant.
 
 ## Modules
 
@@ -33,7 +71,7 @@ The library includes modules as follows:
 
 - Implement message localization in the API module. Currently, only the default formatting pattern is read.
 
-## Notes
+## Code Style
 
 - The style and coding convention used for this project are based on 
   [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html), with the exception of line length 
