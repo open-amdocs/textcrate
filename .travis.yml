@@ -1,0 +1,27 @@
+language: java
+
+sudo: false
+
+install: mvn clean install -Dgpg.skip
+
+jdk:
+  - oraclejdk8
+
+services:
+  - cassandra
+
+cache:
+  directories:
+  - $HOME/.m2
+
+# safelist
+branches:
+  only:
+  - master
+
+#Build notification messages , upun build status 
+notifications: 
+  email:
+    recipients:
+      - Vitaliy.Emporopulo@amdocs.com
+      - Halfon.Tal@amdocs.com
