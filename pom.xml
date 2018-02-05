@@ -36,7 +36,7 @@
     </properties>
 
     <scm>
-        <url>http://github.com/google/auto</url>
+        <url>http://github.com/open-amdocs/message-formatting</url>
         <connection>scm:git:git://github.com/open-amdocs/message-formatting.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/open-amdocs/message-formatting.git</developerConnection>
         <tag>HEAD</tag>
