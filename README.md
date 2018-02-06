@@ -14,7 +14,7 @@ messages from Java application code.
 ```java
 @CodeSpec(offset=20, pattern="BOR-{}")
 @MessageProperty(name="type", value="Error")
-public interface BooksBorrowingErrors {
+public interface BookBorrowingErrors {
     
     @MessageSpec(id=1, pattern="'{}' is currently not available")
     Message bookUnavailable(String title);
@@ -37,7 +37,7 @@ public interface BooksBorrowingErrors {
     Message reachedMaxBooks = borrowingErrors.attemptToBorrowMoreThanAllowed(12);
     
     // Logs "Attempt to borrow more than 12 books" in SLF4J format 
-    if ("Error".equals(reachedMaxBooks.getProperty("type")) {
+    if ("Error".equals(reachedMaxBooks.getProperty("type"))) {
         LOGGER.error(reachedMaxBooks.getPattern(), reachedMaxBooks.getArguments());
     }
 ```
