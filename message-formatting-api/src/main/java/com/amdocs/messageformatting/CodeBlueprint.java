@@ -100,7 +100,7 @@ class CodeBlueprint {
 
         @Override
         public String toString() {
-            return "Formatting {offset=" + offset + ", pattern='" + pattern + ", formatter=" + formatter + '}';
+            return "Formatting {offset=" + offset + ", pattern=" + pattern + ", formatter=" + formatter + '}';
         }
     }
 

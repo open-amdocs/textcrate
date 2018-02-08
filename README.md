@@ -67,6 +67,10 @@ The library includes modules as follows:
 
 ## TODO
 
+- Support inheritance, when an interface extends another interface or even multiple interfaces.
+ 
+- Support interfaces declared inside classes.
+
 - Implement loading non-default formatting patterns using Java Resource Bundles.
 
 - Implement message localization in the API module. Currently, only the default formatting pattern is read.

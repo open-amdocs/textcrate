@@ -17,6 +17,7 @@
 package com.amdocs.messageformatting;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
@@ -147,7 +148,7 @@ public class ProxyMessageFactoryServiceTest {
                 "MessageRepositoryInvocationHandler {className=" +
                         "com.amdocs.messageformatting.ProxyMessageFactoryServiceTest$FormattedCodeMessages, " +
                         "messageFormatter=ResilientFormatter {delegate=Slf4jFormatter {}}, " +
-                        "codeFormatting=Formatting {offset=2000, pattern='[APP]:{}-code, " +
+                        "codeFormatting=Formatting {offset=2000, pattern=[APP]:{}-code, " +
                         "formatter=ResilientFormatter {delegate=Slf4jFormatter {}}}, properties={}}");
     }
 
@@ -194,7 +195,7 @@ public class ProxyMessageFactoryServiceTest {
         final Message message = messages.get().isAlive(argument);
         assertEquals(message.getPattern(), IS_STILL_ALIVE);
         assertEquals(message.getArguments(), new String[] { argument });
-        assertEquals(message.getMessage(), "Message: '{} is still alive!'. Arguments: [This method]");
+        assertEquals(message.getMessage(), "Pattern: '{} is still alive!'. Arguments: [This method]");
     }
 
     @Test
@@ -205,7 +206,7 @@ public class ProxyMessageFactoryServiceTest {
         final Message message = messages.get().canFormat();
         assertEquals(message.getPattern(), "Still there");
         assertEquals(message.getArguments(), new Object[0]);
-        assertEquals(message.getMessage(), "Message: 'Still there'. Arguments: []");
+        assertEquals(message.getMessage(), "Pattern: 'Still there'. Arguments: []");
     }
 
     @Test
@@ -243,7 +244,7 @@ public class ProxyMessageFactoryServiceTest {
         final Optional<MessagesWithProperties> messages =
                 new ProxyMessagesProvider().getMessages(MessagesWithProperties.class);
         assertTrue(messages.isPresent());
-        final Message data = messages.get().unAnnanoted("arg");
+        final Message data = messages.get().unAnnotated("arg");
         assertEquals(data.getProperty(PROP_ONE_KEY), PROP_ONE_VALUE);
         assertEquals(data.getProperty(PROP_TWO_KEY), PROP_TWO_VALUE);
     }
@@ -258,6 +259,47 @@ public class ProxyMessageFactoryServiceTest {
                 "TestMessages#stringTypeWithoutAnnotation([argument])");
     }
 
+    @Test
+    public void instancesEqualWhenFromSameInterface() {
+
+        final Optional<TestMessages> optionalOne =
+            new ProxyMessagesProvider().getMessages(TestMessages.class);
+        assertTrue(optionalOne.isPresent());
+
+        final Optional<TestMessages> optionalTwo =
+            new ProxyMessagesProvider().getMessages(TestMessages.class);
+        assertTrue(optionalTwo.isPresent());
+
+        TestMessages instanceOne = optionalOne.get();
+        TestMessages instanceTwo = optionalTwo.get();
+        assertEquals(instanceOne, instanceTwo);
+        assertEquals(instanceOne.hashCode(), instanceTwo.hashCode());
+    }
+
+    @Test
+    public void instancesNotEqualWhenFromDifferentInterfaces() {
+
+        final Optional<TestMessages> optionalOne =
+            new ProxyMessagesProvider().getMessages(TestMessages.class);
+        assertTrue(optionalOne.isPresent());
+
+        final Optional<FormattedCodeMessages> optionalTwo =
+            new ProxyMessagesProvider().getMessages(FormattedCodeMessages.class);
+        assertTrue(optionalTwo.isPresent());
+
+        assertNotEquals(optionalOne.get(), optionalTwo.get());
+    }
+
+    @Test
+    public void meaningfulStringReturnedWhenToStringInvoked() {
+        final Optional<TestMessages> messages =
+            new ProxyMessagesProvider().getMessages(TestMessages.class);
+        assertTrue(messages.isPresent());
+        assertEquals(messages.get().toString(), "MessageRepositoryInvocationHandler "
+            + "{className=com.amdocs.messageformatting.ProxyMessageFactoryServiceTest$TestMessages, "
+            + "messageFormatter=ResilientFormatter {delegate=Slf4jFormatter {}}, codeFormatting=Formatting "
+            + "{offset=0, pattern=, formatter=AsIsFormatter{}}, properties={}}");
+    }
 
     private interface UnannotatedClass { }
 
@@ -309,7 +351,7 @@ public class ProxyMessageFactoryServiceTest {
         @MessageSpec(id = 0, pattern = "{}")
         Message test();
 
-        Message unAnnanoted(String argument);
+        Message unAnnotated(String argument);
     }
 
     @MessageFormatter(type = FailingFormatter.class)

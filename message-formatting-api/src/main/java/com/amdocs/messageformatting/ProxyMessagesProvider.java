@@ -55,34 +55,15 @@ class ProxyMessagesProvider implements MessagesProvider {
             new ResilientFormatter(MessageFormatter.DEFAULT_FORMATTER);
 
     /**
-     * Returns the first argument "AS IS", without using any pattern. Should be used when no message code pattern was
-     * specified. Otherwise, an "if" statement would be needed to check for code formatting every time a message code
-     * is requested.
+     * Should be used when no message code pattern was specified. Otherwise, an "if" statement would be needed to check
+     * the code formatter for <code>null</code> every time a message code is requested.
      */
-    private static final Formatter DEFAULT_MSG_CODE_FORMATTER = new Formatter() {
-
-        @Override
-        public String format(String pattern, Object... arguments) {
-            return String.valueOf(arguments[0]);
-        }
-
-        @Override
-        public void validate(String pattern, Type... types) { /* do nothing */ }
-    };
+    private static final Formatter DEFAULT_MSG_CODE_FORMATTER = new AsIsFormatter();
 
     /**
      * Return something meaningful when all other attempts failed.
      */
-    private static final Formatter FALLBACK_FORMATTER = new Formatter() {
-
-        @Override
-        public String format(String pattern, Object... arguments) {
-            return "Message: '" + pattern + "'. Arguments: " + Arrays.toString(arguments);
-        }
-
-        @Override
-        public void validate(String pattern, Type... types) { /* accept everything */ }
-    };
+    private static final Formatter FALLBACK_FORMATTER = new ToStringFormatter();
 
     @Override
     public <T> Optional<T> getMessages(Class<T> clazz) {
@@ -205,17 +186,23 @@ class ProxyMessagesProvider implements MessagesProvider {
                 return true;
             }
 
-            if (o == null || getClass() != o.getClass()) {
+            if (o == null || !(o instanceof Proxy)) {
                 return false;
             }
 
-            MessageRepositoryInvocationHandler that = (MessageRepositoryInvocationHandler) o;
+            // must be a proxy with the same type of invocation handler
+            InvocationHandler invocationHandler = Proxy.getInvocationHandler(o);
+            if (invocationHandler.getClass() != this.getClass()) {
+                return false;
+            }
+
+            MessageRepositoryInvocationHandler that = (MessageRepositoryInvocationHandler) invocationHandler;
             return Objects.equals(className, that.className); // leave out the other fields
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(super.hashCode(), className); // leave out the other fields
+            return Objects.hash(this.getClass(), className); // leave out the other fields
         }
 
         @Override
@@ -344,6 +331,66 @@ class ProxyMessagesProvider implements MessagesProvider {
         @Override
         public String toString() {
             return "ResilientFormatter {delegate=" + delegate + '}';
+        }
+    }
+
+    /**
+     * Should be used when the formatting rules are unknown. In this case both the pattern and the arguments of
+     * a message will be converted to <code>String</code> "AS IS", without the pattern being applied to the arguments.
+     */
+    private static class ToStringFormatter implements Formatter {
+
+        @Override
+        public String format(String pattern, Object... arguments) {
+            return "Pattern: '" + pattern + "'. Arguments: " + Arrays.toString(arguments);
+        }
+
+        @Override
+        public void validate(String pattern, Type... types) { /* accept everything */ }
+
+        @Override
+        public int hashCode() {
+            return this.getClass().hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj != null && this.getClass().equals(obj.getClass());
+        }
+
+        @Override
+        public String toString() {
+            return "ToStringFormatter{}";
+        }
+    }
+
+    /**
+     * Returns the first argument "AS IS", without using any pattern.
+     * Must be used only when there is at least one argument.
+     */
+    private static class AsIsFormatter implements Formatter {
+
+        @Override
+        public String format(String pattern, Object... arguments) {
+            return String.valueOf(arguments[0]);
+        }
+
+        @Override
+        public void validate(String pattern, Type... types) { /* do nothing */ }
+
+        @Override
+        public int hashCode() {
+            return this.getClass().hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj != null && this.getClass().equals(obj.getClass());
+        }
+
+        @Override
+        public String toString() {
+            return "AsIsFormatter{}";
         }
     }
 }
