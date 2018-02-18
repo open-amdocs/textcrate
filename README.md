@@ -1,7 +1,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Build Status](https://travis-ci.org/open-amdocs/textcrate.svg?branch=master)](https://travis-ci.org/open-amdocs/textcrate)
 
-# Message Repositories
+# TextCrate Message Repositories
 
 The main purpose of this library is to enable external repositories of parametrized messages for easy modification,
 localization, proof-reading, and automatic checking at build-time, as well as to provide convenient access to the
@@ -24,7 +24,7 @@ public interface BookBorrowingErrors {
 }
 ```
 
-### Printing to stdout
+### Printing to Stdout
 
 ```java
     BookBorrowingErrors borrowingErrors = Messages.from(BookBorrowingErrors.class);
