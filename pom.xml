@@ -21,9 +21,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.amdocs.messageformatting</groupId>
-    <artifactId>message-formatting</artifactId>
+    <artifactId>textcrate</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>Message Formatting (Parent)</name>
+    <name>TextCrate Message Repositories (Parent)</name>
     <description>Libraries for application message repositories and formatting</description>
     <packaging>pom</packaging>
 
@@ -36,9 +36,9 @@
     </properties>
 
     <scm>
-        <url>http://github.com/open-amdocs/message-formatting</url>
-        <connection>scm:git:git://github.com/open-amdocs/message-formatting.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/open-amdocs/message-formatting.git</developerConnection>
+        <url>http://github.com/open-amdocs/textcrate</url>
+        <connection>scm:git:git://github.com/open-amdocs/textcrate.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/open-amdocs/textcrate.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
@@ -55,7 +55,7 @@
     </organization>
 
     <modules>
-        <module>message-formatting-api</module>
+        <module>textcrate-api</module>
     </modules>
 
     <dependencyManagement>
