@@ -97,6 +97,6 @@ class BaseMessage implements Message {
 
     @Override
     public String toString() {
-        return "BaseMessage {arguments=" + Arrays.toString(arguments) + ", blueprint=" + blueprint + '}';
+        return getCode() + " " + getMessage();
     }
 }

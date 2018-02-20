@@ -235,8 +235,9 @@ public class ProxyMessageFactoryServiceTest {
                 new ProxyMessagesProvider().getMessages(TestMessages.class);
         assertTrue(messages.isPresent());
         final Message data = messages.get().missingAnnotation("arg");
-        assertEquals(data.toString(), "BaseMessage {arguments=[arg], blueprint=UnannotatedBlueprint " +
-                "{method=missingAnnotation, properties={}}}");
+        assertEquals(data.toString(), "2147483647 "
+            + "Unannotated message: com.amdocs.textcrate.ProxyMessageFactoryServiceTest$TestMessages"
+            + "#missingAnnotation([arg])");
     }
 
     @Test

@@ -19,6 +19,10 @@ package com.amdocs.textcrate;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
 
+import com.amdocs.textcrate.CodeBlueprint.Formatting;
+import com.amdocs.textcrate.api.Formatter;
+import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Collections;
 import org.testng.annotations.Test;
 
@@ -30,30 +34,65 @@ public class BaseMessageTest {
 
     @Test
     public void notEqualWhenDifferentArguments() {
-        assertNotEquals(new BaseMessage(null, "A"), new BaseMessage(null, "B"));
+        BaseMessageBlueprint blueprint = buildStubBlueprint(0);
+        assertNotEquals(new BaseMessage(blueprint, "A"), new BaseMessage(blueprint, "B"));
     }
 
     @Test
     public void equalWhenEqualArguments() {
-        assertEquals(new BaseMessage(null, "C"), new BaseMessage(null, "C"));
+        BaseMessageBlueprint blueprint = buildStubBlueprint(0);
+        assertEquals(new BaseMessage(blueprint, "C"),
+            new BaseMessage(blueprint, "C"));
     }
 
     @Test
     public void notEqualWhenDifferentBlueprints() {
-        assertNotEquals(new BaseMessage(
-                new BaseMessageBlueprint(new CodeBlueprint(0, null), null, Collections.emptyMap())
-        ), new BaseMessage(
-                new BaseMessageBlueprint(new CodeBlueprint(1, null), null, Collections.emptyMap())
-        ));
+        assertNotEquals(new BaseMessage(buildStubBlueprint(0)), new BaseMessage(buildStubBlueprint(1)));
     }
 
     @Test
     public void equalWhenEqualBlueprints() {
-        BaseMessage one = new BaseMessage(new BaseMessageBlueprint(
-                new CodeBlueprint(0, null), null, Collections.emptyMap()));
-        BaseMessage two = new BaseMessage(new BaseMessageBlueprint(
-                new CodeBlueprint(0, null), null, Collections.emptyMap()));
+        BaseMessage one = new BaseMessage(buildStubBlueprint(0));
+        BaseMessage two = new BaseMessage(buildStubBlueprint(0));
         assertEquals(one, two);
         assertEquals(one.hashCode(), two.hashCode());
+    }
+
+    @Test
+    public void toStringHasCodeAndMessage() {
+        assertEquals(new BaseMessage(buildStubBlueprint(0), "Hello").toString(), "[0] [Hello]");
+    }
+
+    private BaseMessageBlueprint buildStubBlueprint(int id) {
+        StubFormatter formatter = new StubFormatter();
+        CodeBlueprint codeBlueprint = new CodeBlueprint(id, new Formatting(0, "", formatter));
+        BaseMessageBlueprint.Formatting msgFormatting = new BaseMessageBlueprint.Formatting("", formatter);
+        return new BaseMessageBlueprint(codeBlueprint, msgFormatting, Collections.emptyMap());
+    }
+
+    private static class StubFormatter implements Formatter {
+
+        @Override
+        public String format(String pattern, Object... arguments) {
+            return Arrays.toString(arguments);
+        }
+
+        @Override
+        public void validate(String pattern, Type... types) { /* no-op */ }
+
+        @Override
+        public boolean equals(Object o) {
+            return (this == o) || (o != null && getClass() == o.getClass());
+        }
+
+        @Override
+        public int hashCode() {
+            return getClass().hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return "StubFormatter{}";
+        }
     }
 }
