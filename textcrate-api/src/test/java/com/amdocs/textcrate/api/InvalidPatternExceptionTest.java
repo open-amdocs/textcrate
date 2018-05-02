@@ -22,6 +22,8 @@ import static org.testng.Assert.assertNull;
 import org.testng.annotations.Test;
 
 /**
+ * Tests basic functionality (e.g. construction and properties) of pattern exceptions.
+ *
  * @author evitaliy
  * @since 29 Jan 18
  */

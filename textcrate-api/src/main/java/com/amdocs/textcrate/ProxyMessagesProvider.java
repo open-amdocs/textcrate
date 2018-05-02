@@ -186,7 +186,7 @@ class ProxyMessagesProvider implements MessagesProvider {
                 return true;
             }
 
-            if (o == null || !(o instanceof Proxy)) {
+            if (!(o instanceof Proxy)) {
                 return false;
             }
 

@@ -27,6 +27,8 @@ import java.util.Collections;
 import org.testng.annotations.Test;
 
 /**
+ * Tests base class for message objects.
+ *
  * @author evitaliy
  * @since 29 Jan 18
  */
@@ -41,8 +43,7 @@ public class BaseMessageTest {
     @Test
     public void equalWhenEqualArguments() {
         BaseMessageBlueprint blueprint = buildStubBlueprint(0);
-        assertEquals(new BaseMessage(blueprint, "C"),
-            new BaseMessage(blueprint, "C"));
+        assertEquals(new BaseMessage(blueprint, "C"), new BaseMessage(blueprint, "C"));
     }
 
     @Test

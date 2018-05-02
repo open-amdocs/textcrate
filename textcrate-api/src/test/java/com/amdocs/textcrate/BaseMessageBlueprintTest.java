@@ -24,6 +24,8 @@ import java.util.Map;
 import org.testng.annotations.Test;
 
 /**
+ * Tests base class for message blueprints.
+ *
  * @author evitaliy
  * @since 29 Jan 18
  */

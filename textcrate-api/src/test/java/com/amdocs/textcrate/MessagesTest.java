@@ -16,32 +16,61 @@
 
 package com.amdocs.textcrate;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
+import com.amdocs.textcrate.spi.MessagesProvider;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import org.testng.annotations.Test;
 
 /**
+ * Tests loading a message repository defined in an interface.
+ *
  * @author evitaliy
  * @since 25 Jan 18
  */
 public class MessagesTest {
 
     @Test(expectedExceptions = NullPointerException.class)
-    public void fromThrowsNpeWhenClassNull() {
+    public void loadingMessagesThrowsNpeWhenClassNull() {
         Messages.from(null);
     }
 
     @Test
-    public void fromAlwaysReturnsSomething() {
+    public void loadingMessagesAlwaysReturnsSomething() {
         assertNotNull(Messages.from(DummyMessages.class));
     }
 
     @Test
-    public void fromReturnsDynamicProxyWhenNoProviderConfigured() {
+    public void loadingMessagesReturnsDynamicProxyWhenNoProviderConfigured() {
         String implementationClass = Messages.from(DummyMessages.class).getClass().getName();
-        assertTrue(implementationClass.startsWith("com.amdocs.textcrate.$Proxy"));
+        assertTrue(implementationClass.startsWith(this.getClass().getPackage().getName() + ".$Proxy"));
+    }
+
+    @Test
+    public void loadingMessagesReturnsCustomImplementationWhenAvailable() {
+
+        final String providerInterface = "META-INF/services/" + MessagesProvider.class.getName();
+        final byte[] implementationName = DummyMessagesProvider.class.getName().getBytes(StandardCharsets.UTF_8);
+
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        ServiceHelperClassLoader classLoader =
+                new ServiceHelperClassLoader(providerInterface, implementationName, contextClassLoader);
+
+        assertEquals(Messages.from(DummyMessages.class, classLoader).getClass(), DummyMessagesImpl.class);
     }
 
     private interface DummyMessages { /* methods not needed */}
+
+    private static class DummyMessagesImpl implements DummyMessages { /* not needed */ }
+
+    public static class DummyMessagesProvider implements MessagesProvider {
+
+        @Override
+        public <T> Optional<T> getMessages(Class<T> clazz) {
+            return Optional.of(clazz.cast(new DummyMessagesImpl()));
+        }
+    }
 }

@@ -23,6 +23,8 @@ import com.amdocs.textcrate.formatters.Slf4jFormatter;
 import org.testng.annotations.Test;
 
 /**
+ * Tests basic functionality of code blueprints.
+ *
  * @author evitaliy
  * @since 29 Jan 18
  */

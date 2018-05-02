@@ -16,12 +16,14 @@
 
 package com.amdocs.textcrate.formatters;
 
+import static org.testng.Assert.assertEquals;
+
 import com.amdocs.textcrate.api.InvalidPatternException;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
-
 /**
+ * Tests formatting and validation for SFL4J format.
+ *
  * @author evitaliy
  * @since 16 Oct 17
  */

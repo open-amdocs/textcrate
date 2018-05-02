@@ -60,12 +60,29 @@ public class Messages {
      * @param <T> concrete interface type
      * @return object that implements the message repository interface
      */
-    @SuppressWarnings({"squid:S3655", "ConstantConditions"}) //// isPresent() on FALLBACK must always succeed
     public static <T> T from(Class<T> clazz) {
-
         Objects.requireNonNull(clazz, "Class cannot be null");
-
         ServiceLoader<MessagesProvider> loader = ServiceLoader.load(MessagesProvider.class);
+        return loadFromProvider(clazz, loader);
+    }
+
+    /**
+     * Entry point for getting an instance that represents a message repository using a custom class loader.
+     *
+     * @param clazz interface that defines messages with their codes, patterns, parameters and metadata
+     * @param <T> concrete interface type
+     * @param classLoader non-default class loader for looking up custom repository implementations
+     * @return object that implements the message repository interface
+     */
+    public static <T> T from(Class<T> clazz, ClassLoader classLoader) {
+        Objects.requireNonNull(clazz, "Class cannot be null");
+        ServiceLoader<MessagesProvider> loader = ServiceLoader.load(MessagesProvider.class, classLoader);
+        return loadFromProvider(clazz, loader);
+    }
+
+    @SuppressWarnings({"squid:S3655", "ConstantConditions"}) //// isPresent() on FALLBACK must always succeed
+    private static <T> T loadFromProvider(Class<T> clazz, ServiceLoader<MessagesProvider> loader) {
+
         for (MessagesProvider provider : loader) {
 
             Optional<T> messages = provider.getMessages(clazz);
@@ -82,7 +99,7 @@ public class Messages {
 
         Logger logger = LoggerFactory.getLogger(Messages.class);
         if (logger.isDebugEnabled()) {
-            logger.debug("Messages for {} are provided by {}", clazz.getName(), provider.toString());
+            logger.debug("Messages for {} are provided by {}", clazz.getName(), provider);
         }
     }
 }

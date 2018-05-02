@@ -35,10 +35,12 @@ import java.util.Optional;
 import org.testng.annotations.Test;
 
 /**
+ * Tests the behavior of the proxy-based provider.
+ *
  * @author evitaliy
  * @since 18/09/2016.
  */
-public class ProxyMessageFactoryServiceTest {
+public class ProxyMessagesProviderTest {
 
     private static final String EXPECTED_MESSAGE_CODE = "[APP]:2112-code";
     private static final String IS_STILL_ALIVE = "{} is still alive!";
@@ -48,13 +50,13 @@ public class ProxyMessageFactoryServiceTest {
     private static final String PROP_TWO_VALUE = "2";
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp =
-            "[\\w\\.]+\\.ProxyMessageFactoryServiceTest\\$ConcreteClassMessages is not an interface")
+            "[\\w\\.]+\\.ProxyMessagesProviderTest\\$ConcreteClassMessages is not an interface")
     public void proxyingMessagesFailsWhenInputIsConcreteClass() {
         new ProxyMessagesProvider().getMessages(ConcreteClassMessages.class);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp =
-            "[\\w\\.]+\\.ProxyMessageFactoryServiceTest\\$AbstractClassMessages is not an interface")
+            "[\\w\\.]+\\.ProxyMessagesProviderTest\\$AbstractClassMessages is not an interface")
     public void proxyingMessagesFailsWhenInputIsAbstractClass() {
         new ProxyMessagesProvider().getMessages(AbstractClassMessages.class);
     }
@@ -77,10 +79,10 @@ public class ProxyMessageFactoryServiceTest {
         assertEquals(message.getCode(), Integer.toString(Integer.MAX_VALUE));
 
         assertEquals(message.getPattern(),
-                "com.amdocs.textcrate.ProxyMessageFactoryServiceTest$TestMessages:missingAnnotation");
+                "com.amdocs.textcrate.ProxyMessagesProviderTest$TestMessages:missingAnnotation");
         assertEquals(message.getMessage(),
-                "Unannotated message: com.amdocs.textcrate.ProxyMessageFactoryServiceTest$TestMessages#" +
-                        "missingAnnotation([argument])");
+                "Unannotated message: com.amdocs.textcrate.ProxyMessagesProviderTest$TestMessages#"
+                        + "missingAnnotation([argument])");
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp =
@@ -145,11 +147,11 @@ public class ProxyMessageFactoryServiceTest {
                 new ProxyMessagesProvider().getMessages(FormattedCodeMessages.class);
         assertTrue(messages.isPresent());
         assertEquals(messages.get().toString(),
-                "MessageRepositoryInvocationHandler {className=" +
-                        "com.amdocs.textcrate.ProxyMessageFactoryServiceTest$FormattedCodeMessages, " +
-                        "messageFormatter=ResilientFormatter {delegate=Slf4jFormatter {}}, " +
-                        "codeFormatting=Formatting {offset=2000, pattern=[APP]:{}-code, " +
-                        "formatter=ResilientFormatter {delegate=Slf4jFormatter {}}}, properties={}}");
+                "MessageRepositoryInvocationHandler {className="
+                        + "com.amdocs.textcrate.ProxyMessagesProviderTest$FormattedCodeMessages, "
+                        + "messageFormatter=ResilientFormatter {delegate=Slf4jFormatter {}}, "
+                        + "codeFormatting=Formatting {offset=2000, pattern=[APP]:{}-code, "
+                        + "formatter=ResilientFormatter {delegate=Slf4jFormatter {}}}, properties={}}");
     }
 
     @Test
@@ -235,9 +237,9 @@ public class ProxyMessageFactoryServiceTest {
                 new ProxyMessagesProvider().getMessages(TestMessages.class);
         assertTrue(messages.isPresent());
         final Message data = messages.get().missingAnnotation("arg");
-        assertEquals(data.toString(), "2147483647 "
-            + "Unannotated message: com.amdocs.textcrate.ProxyMessageFactoryServiceTest$TestMessages"
-            + "#missingAnnotation([arg])");
+        assertEquals(data.toString(),
+                "2147483647 Unannotated message: com.amdocs.textcrate.ProxyMessagesProviderTest$TestMessages"
+                        + "#missingAnnotation([arg])");
     }
 
     @Test
@@ -256,19 +258,17 @@ public class ProxyMessageFactoryServiceTest {
                 new ProxyMessagesProvider().getMessages(TestMessages.class);
         assertTrue(messages.isPresent());
         final String data = messages.get().stringTypeWithoutAnnotation("argument");
-        assertEquals(data, "Unannotated message: com.amdocs.textcrate.ProxyMessageFactoryServiceTest$" +
-                "TestMessages#stringTypeWithoutAnnotation([argument])");
+        assertEquals(data, "Unannotated message: com.amdocs.textcrate.ProxyMessagesProviderTest$"
+                                   + "TestMessages#stringTypeWithoutAnnotation([argument])");
     }
 
     @Test
     public void instancesEqualWhenFromSameInterface() {
 
-        final Optional<TestMessages> optionalOne =
-            new ProxyMessagesProvider().getMessages(TestMessages.class);
+        final Optional<TestMessages> optionalOne = new ProxyMessagesProvider().getMessages(TestMessages.class);
         assertTrue(optionalOne.isPresent());
 
-        final Optional<TestMessages> optionalTwo =
-            new ProxyMessagesProvider().getMessages(TestMessages.class);
+        final Optional<TestMessages> optionalTwo = new ProxyMessagesProvider().getMessages(TestMessages.class);
         assertTrue(optionalTwo.isPresent());
 
         TestMessages instanceOne = optionalOne.get();
@@ -280,26 +280,24 @@ public class ProxyMessageFactoryServiceTest {
     @Test
     public void instancesNotEqualWhenFromDifferentInterfaces() {
 
-        final Optional<TestMessages> optionalOne =
-            new ProxyMessagesProvider().getMessages(TestMessages.class);
+        final Optional<TestMessages> optionalOne = new ProxyMessagesProvider().getMessages(TestMessages.class);
         assertTrue(optionalOne.isPresent());
 
         final Optional<FormattedCodeMessages> optionalTwo =
-            new ProxyMessagesProvider().getMessages(FormattedCodeMessages.class);
-        assertTrue(optionalTwo.isPresent());
+                new ProxyMessagesProvider().getMessages(FormattedCodeMessages.class);
 
+        assertTrue(optionalTwo.isPresent());
         assertNotEquals(optionalOne.get(), optionalTwo.get());
     }
 
     @Test
     public void meaningfulStringReturnedWhenToStringInvoked() {
-        final Optional<TestMessages> messages =
-            new ProxyMessagesProvider().getMessages(TestMessages.class);
+        final Optional<TestMessages> messages = new ProxyMessagesProvider().getMessages(TestMessages.class);
         assertTrue(messages.isPresent());
-        assertEquals(messages.get().toString(), "MessageRepositoryInvocationHandler "
-            + "{className=com.amdocs.textcrate.ProxyMessageFactoryServiceTest$TestMessages, "
-            + "messageFormatter=ResilientFormatter {delegate=Slf4jFormatter {}}, codeFormatting=Formatting "
-            + "{offset=0, pattern=, formatter=AsIsFormatter{}}, properties={}}");
+        assertEquals(messages.get().toString(), "MessageRepositoryInvocationHandler {className=com.amdocs.textcrate"
+                        + ".ProxyMessagesProviderTest$TestMessages, "
+                        + "messageFormatter=ResilientFormatter {delegate=Slf4jFormatter {}}, codeFormatting=Formatting "
+                        + "{offset=0, pattern=, formatter=AsIsFormatter{}}, properties={}}");
     }
 
     private interface UnannotatedClass { }
