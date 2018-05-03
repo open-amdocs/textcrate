@@ -19,7 +19,7 @@ package com.amdocs.textcrate;
 import com.amdocs.textcrate.api.Message;
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
 
 /**
  * <p>Private to this package implementation of {@link Message}. It is based on a {@link MessageBlueprint} for
@@ -28,6 +28,7 @@ import java.util.Objects;
  * @author evitaliy
  * @since 18 Oct 17
  */
+@EqualsAndHashCode
 class BaseMessage implements Message {
 
     private final Object[] arguments;
@@ -71,28 +72,6 @@ class BaseMessage implements Message {
     @Override
     public String getProperty(String name) {
         return blueprint.getProperty(name);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-
-        if (this == o) {
-            return true;
-        }
-
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        BaseMessage message = (BaseMessage) o;
-        return Arrays.equals(arguments, message.arguments) && Objects.equals(blueprint, message.blueprint);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(blueprint);
-        result = 31 * result + Arrays.hashCode(arguments);
-        return result;
     }
 
     @Override

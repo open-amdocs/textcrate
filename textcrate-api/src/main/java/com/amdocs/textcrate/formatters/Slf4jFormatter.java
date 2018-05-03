@@ -21,6 +21,8 @@ import com.amdocs.textcrate.api.InvalidPatternException;
 import java.lang.reflect.Type;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.slf4j.helpers.MessageFormatter;
 
 /**
@@ -36,6 +38,8 @@ import org.slf4j.helpers.MessageFormatter;
  * @author evitaliy
  * @since 22 Aug 17
  */
+@EqualsAndHashCode
+@ToString
 public class Slf4jFormatter implements Formatter {
 
     private static final String PLACEHOLDER = "{}";
@@ -96,20 +100,5 @@ public class Slf4jFormatter implements Formatter {
         }
 
         return count != 1;
-    }
-
-    @Override
-    public int hashCode() {
-        return Slf4jFormatter.class.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return this == obj || obj != null && getClass() == obj.getClass();
-    }
-
-    @Override
-    public String toString() {
-        return "Slf4jFormatter {}";
     }
 }

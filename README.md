@@ -100,7 +100,18 @@ The library includes modules as follows:
 
 - Implement message localization in the API module. Currently, only the default formatting pattern is read.
 
-## Code Style
+## Contributing
+
+Contributions in any form and shape are welcomed! Code, bug reports, suggestions for improvement &mdash; all will be 
+greatly appreciated. There is no established procedure for code contributions yet, so please open an issue for that.
+
+### If It Does Not Compile...
+
+- This project uses [Lombok](https://projectlombok.org/) to avoid boilerplate code (toString(), equals(), hashCode(), 
+  etc.). There is no problem to build it with Maven, but to work comfortably in an IDE you will have to install a 
+  [Lombok plugin](https://projectlombok.org/setup/overview).  
+
+### Code Style
 
 - The style and coding convention used for this project are based on 
   [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html), with the exception of line length 

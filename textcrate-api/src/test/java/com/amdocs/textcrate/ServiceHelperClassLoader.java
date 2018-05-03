@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author evitaliy
  * @since 15 Jan 18
  */
-public class ServiceHelperClassLoader extends ClassLoader {
+class ServiceHelperClassLoader extends ClassLoader {
 
     private static final String PROTOCOL = "memory";
     private static final String URL_PREFIX = PROTOCOL + "://";

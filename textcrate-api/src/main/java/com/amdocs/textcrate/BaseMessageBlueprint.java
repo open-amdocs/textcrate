@@ -18,7 +18,9 @@ package com.amdocs.textcrate;
 
 import com.amdocs.textcrate.api.Formatter;
 import java.util.Map;
-import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * <p>A straightforward implementation of {@link MessageBlueprint}.</p>
@@ -26,17 +28,14 @@ import java.util.Objects;
  * @author evitaliy
  * @since 18 Oct 17
  */
+@AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 class BaseMessageBlueprint implements MessageBlueprint {
 
     private final CodeBlueprint codeBlueprint;
     private final Formatting formatting;
     private final Map<String, String> properties;
-
-    BaseMessageBlueprint(CodeBlueprint codeBlueprint, Formatting formatting, Map<String, String> properties) {
-        this.codeBlueprint = codeBlueprint;
-        this.formatting = formatting;
-        this.properties = properties;
-    }
 
     @Override
     public String format(Object[] arguments) {
@@ -58,66 +57,11 @@ class BaseMessageBlueprint implements MessageBlueprint {
         return properties.get(name);
     }
 
-    @Override
-    public boolean equals(Object o) {
-
-        if (this == o) {
-            return true;
-        }
-
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        BaseMessageBlueprint that = (BaseMessageBlueprint) o;
-        return Objects.equals(codeBlueprint, that.codeBlueprint) && Objects.equals(formatting, that.formatting)
-            && Objects.equals(properties, that.properties);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(codeBlueprint, formatting, properties);
-    }
-
-    @Override
-    public String toString() {
-        return "BaseMessageBlueprint {codeBlueprint=" + codeBlueprint + ", formatting=" + formatting
-            + ", properties=" + properties + '}';
-    }
-
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
     static class Formatting {
-
         private final String pattern;
         private final Formatter formatter;
-
-        Formatting(String pattern, Formatter formatter) {
-            this.pattern = pattern;
-            this.formatter = formatter;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-
-            if (this == o) {
-                return true;
-            }
-
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-
-            Formatting that = (Formatting) o;
-            return Objects.equals(pattern, that.pattern) && Objects.equals(formatter, that.formatter);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(pattern, formatter);
-        }
-
-        @Override
-        public String toString() {
-            return "Formatting {pattern=" + pattern + ", formatter=" + formatter + '}';
-        }
     }
 }

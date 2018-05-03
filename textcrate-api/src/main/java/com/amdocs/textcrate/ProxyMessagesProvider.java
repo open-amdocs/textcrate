@@ -36,6 +36,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,20 +75,21 @@ class ProxyMessagesProvider implements MessagesProvider {
         return Optional.of(clazz.cast(repo));
     }
 
+    @ToString(exclude = "messages")
     private static class MessageRepositoryInvocationHandler implements InvocationHandler {
 
         private static final Object[] EMPTY_ARGS = new Object[0];
 
         private final String className;
-        private final Formatter formatter;
+        private final Formatter messageFormatter;
         private final CodeBlueprint.Formatting codeFormatting;
         private final Map<String, String> properties;
         private final Map<Method, MessageBlueprint> messages = new ConcurrentHashMap<>();
 
         private <T> MessageRepositoryInvocationHandler(Class<T> clazz) {
             this.className = clazz.getName();
-            this.formatter = initMessageFormatter(clazz);
-            this.codeFormatting = initCodeFormatting(clazz, this.formatter);
+            this.messageFormatter = initMessageFormatter(clazz);
+            this.codeFormatting = initCodeFormatting(clazz, this.messageFormatter);
             this.properties = initProperties(clazz);
         }
 
@@ -140,7 +144,7 @@ class ProxyMessagesProvider implements MessagesProvider {
 
             MessageBlueprint blueprint = this.messages.computeIfAbsent(method, key -> {
                 BaseMessageBlueprint.Formatting formatting =
-                        new BaseMessageBlueprint.Formatting(annotation.pattern(), formatter);
+                        new BaseMessageBlueprint.Formatting(annotation.pattern(), this.messageFormatter);
                 CodeBlueprint codeBlueprint = new CodeBlueprint(annotation.id(), this.codeFormatting);
                 return new BaseMessageBlueprint(codeBlueprint, formatting, properties);
             });
@@ -204,28 +208,20 @@ class ProxyMessagesProvider implements MessagesProvider {
         public int hashCode() {
             return Objects.hash(this.getClass(), className); // leave out the other fields
         }
-
-        @Override
-        public String toString() {
-            return "MessageRepositoryInvocationHandler {className=" + className + ", messageFormatter=" + formatter
-                + ", codeFormatting=" + codeFormatting + ", properties=" + properties + '}';
-        }
     }
 
     /**
      * Best-effort message construction for an unannotated method.
      */
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
     private static class UnannotatedMessageBlueprint implements MessageBlueprint {
 
         private static final String CODE = Integer.toString(Integer.MAX_VALUE);
 
         private final Method method;
         private final Map<String, String> properties;
-
-        private UnannotatedMessageBlueprint(Method method, Map<String, String> properties) {
-            this.method = method;
-            this.properties = properties;
-        }
 
         @Override
         public String format(Object[] arguments) {
@@ -247,44 +243,18 @@ class ProxyMessagesProvider implements MessagesProvider {
         public String getProperty(String name) {
             return properties.get(name);
         }
-
-        @Override
-        public boolean equals(Object o) {
-
-            if (this == o) {
-                return true;
-            }
-
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-
-            UnannotatedMessageBlueprint that = (UnannotatedMessageBlueprint) o;
-            return Objects.equals(method, that.method) && Objects.equals(properties, that.properties);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(method, properties);
-        }
-
-        @Override
-        public String toString() {
-            return "UnannotatedBlueprint {method=" + method.getName() + ", properties=" + properties + '}';
-        }
     }
 
     /**
      * Makes best effort returning a meaningful message if the desired formatter
      * can't do it or fails unexpectedly.
      */
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    @ToString
     private static class ResilientFormatter implements Formatter {
 
         private final Formatter delegate;
-
-        ResilientFormatter(Formatter formatter) {
-            this.delegate = formatter;
-        }
 
         @Override
         public String format(String pattern, Object... arguments) {
@@ -307,37 +277,14 @@ class ProxyMessagesProvider implements MessagesProvider {
                 FALLBACK_FORMATTER.validate(pattern, types);
             }
         }
-
-        @Override
-        public boolean equals(Object o) {
-
-            if (this == o) {
-                return true;
-            }
-
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-
-            ResilientFormatter that = (ResilientFormatter) o;
-            return Objects.equals(delegate, that.delegate);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(delegate);
-        }
-
-        @Override
-        public String toString() {
-            return "ResilientFormatter {delegate=" + delegate + '}';
-        }
     }
 
     /**
      * Should be used when the formatting rules are unknown. In this case both the pattern and the arguments of
      * a message will be converted to <code>String</code> "AS IS", without the pattern being applied to the arguments.
      */
+    @EqualsAndHashCode
+    @ToString
     private static class ToStringFormatter implements Formatter {
 
         @Override
@@ -347,27 +294,14 @@ class ProxyMessagesProvider implements MessagesProvider {
 
         @Override
         public void validate(String pattern, Type... types) { /* accept everything */ }
-
-        @Override
-        public int hashCode() {
-            return this.getClass().hashCode();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj != null && this.getClass().equals(obj.getClass());
-        }
-
-        @Override
-        public String toString() {
-            return "ToStringFormatter{}";
-        }
     }
 
     /**
      * Returns the first argument "AS IS", without using any pattern.
      * Must be used only when there is at least one argument.
      */
+    @EqualsAndHashCode
+    @ToString
     private static class AsIsFormatter implements Formatter {
 
         @Override
@@ -377,20 +311,5 @@ class ProxyMessagesProvider implements MessagesProvider {
 
         @Override
         public void validate(String pattern, Type... types) { /* do nothing */ }
-
-        @Override
-        public int hashCode() {
-            return this.getClass().hashCode();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj != null && this.getClass().equals(obj.getClass());
-        }
-
-        @Override
-        public String toString() {
-            return "AsIsFormatter{}";
-        }
     }
 }

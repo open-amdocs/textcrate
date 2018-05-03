@@ -147,11 +147,12 @@ public class ProxyMessagesProviderTest {
                 new ProxyMessagesProvider().getMessages(FormattedCodeMessages.class);
         assertTrue(messages.isPresent());
         assertEquals(messages.get().toString(),
-                "MessageRepositoryInvocationHandler {className="
-                        + "com.amdocs.textcrate.ProxyMessagesProviderTest$FormattedCodeMessages, "
-                        + "messageFormatter=ResilientFormatter {delegate=Slf4jFormatter {}}, "
-                        + "codeFormatting=Formatting {offset=2000, pattern=[APP]:{}-code, "
-                        + "formatter=ResilientFormatter {delegate=Slf4jFormatter {}}}, properties={}}");
+                "ProxyMessagesProvider.MessageRepositoryInvocationHandler("
+                        + "className=com.amdocs.textcrate.ProxyMessagesProviderTest$FormattedCodeMessages, "
+                        + "messageFormatter=ProxyMessagesProvider.ResilientFormatter(delegate=Slf4jFormatter()), "
+                        + "codeFormatting=CodeBlueprint.Formatting(offset=2000, pattern=[APP]:{}-code, "
+                        + "formatter=ProxyMessagesProvider.ResilientFormatter(delegate=Slf4jFormatter())), "
+                        + "properties={})");
     }
 
     @Test
@@ -294,10 +295,12 @@ public class ProxyMessagesProviderTest {
     public void meaningfulStringReturnedWhenToStringInvoked() {
         final Optional<TestMessages> messages = new ProxyMessagesProvider().getMessages(TestMessages.class);
         assertTrue(messages.isPresent());
-        assertEquals(messages.get().toString(), "MessageRepositoryInvocationHandler {className=com.amdocs.textcrate"
-                        + ".ProxyMessagesProviderTest$TestMessages, "
-                        + "messageFormatter=ResilientFormatter {delegate=Slf4jFormatter {}}, codeFormatting=Formatting "
-                        + "{offset=0, pattern=, formatter=AsIsFormatter{}}, properties={}}");
+        assertEquals(messages.get().toString(),
+                "ProxyMessagesProvider.MessageRepositoryInvocationHandler("
+                        + "className=com.amdocs.textcrate.ProxyMessagesProviderTest$TestMessages, "
+                        + "messageFormatter=ProxyMessagesProvider.ResilientFormatter(delegate=Slf4jFormatter()), "
+                        + "codeFormatting=CodeBlueprint.Formatting(offset=0, pattern=, "
+                        + "formatter=ProxyMessagesProvider.AsIsFormatter()), properties={})");
     }
 
     private interface UnannotatedClass { }

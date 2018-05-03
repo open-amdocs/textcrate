@@ -24,6 +24,8 @@ import com.amdocs.textcrate.api.Formatter;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.testng.annotations.Test;
 
 /**
@@ -71,6 +73,8 @@ public class BaseMessageTest {
         return new BaseMessageBlueprint(codeBlueprint, msgFormatting, Collections.emptyMap());
     }
 
+    @EqualsAndHashCode
+    @ToString
     private static class StubFormatter implements Formatter {
 
         @Override
@@ -80,20 +84,5 @@ public class BaseMessageTest {
 
         @Override
         public void validate(String pattern, Type... types) { /* no-op */ }
-
-        @Override
-        public boolean equals(Object o) {
-            return (this == o) || (o != null && getClass() == o.getClass());
-        }
-
-        @Override
-        public int hashCode() {
-            return getClass().hashCode();
-        }
-
-        @Override
-        public String toString() {
-            return "StubFormatter{}";
-        }
     }
 }
