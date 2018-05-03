@@ -1,5 +1,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Build Status](https://travis-ci.org/open-amdocs/textcrate.svg?branch=master)](https://travis-ci.org/open-amdocs/textcrate)
+[![codebeat badge](https://codebeat.co/badges/74153047-7dd8-4c01-adc6-3bdf9693aadd)](https://codebeat.co/projects/github-com-open-amdocs-textcrate-master)
+[![codecov](https://codecov.io/gh/open-amdocs/textcrate/branch/master/graph/badge.svg)](https://codecov.io/gh/open-amdocs/textcrate)
 
 # TextCrate Message Repositories
 
