@@ -16,6 +16,7 @@
 
 package com.amdocs.textcrate;
 
+import com.amdocs.textcrate.BaseMessageBlueprint.Formatting;
 import com.amdocs.textcrate.api.Formatter;
 import com.amdocs.textcrate.api.InvalidPatternException;
 import com.amdocs.textcrate.api.Message;
@@ -35,6 +36,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -75,19 +77,19 @@ class ProxyMessagesProvider implements MessagesProvider {
         return Optional.of(clazz.cast(repo));
     }
 
-    @ToString(exclude = "messages")
     private static class MessageRepositoryInvocationHandler implements InvocationHandler {
 
         private static final Object[] EMPTY_ARGS = new Object[0];
 
-        private final String className;
+        private final Class<?> originalType;
         private final Formatter messageFormatter;
         private final CodeBlueprint.Formatting codeFormatting;
         private final Map<String, String> properties;
-        private final Map<Method, MessageBlueprint> messages = new ConcurrentHashMap<>();
+
+        private final Map<Method, MessageBlueprint> cachedBlueprints = new ConcurrentHashMap<>();
 
         private <T> MessageRepositoryInvocationHandler(Class<T> clazz) {
-            this.className = clazz.getName();
+            this.originalType = clazz;
             this.messageFormatter = initMessageFormatter(clazz);
             this.codeFormatting = initCodeFormatting(clazz, this.messageFormatter);
             this.properties = initProperties(clazz);
@@ -142,14 +144,19 @@ class ProxyMessagesProvider implements MessagesProvider {
                 return invokeUnannotated(method, normalizedArgs, properties);
             }
 
-            MessageBlueprint blueprint = this.messages.computeIfAbsent(method, key -> {
-                BaseMessageBlueprint.Formatting formatting =
-                        new BaseMessageBlueprint.Formatting(annotation.pattern(), this.messageFormatter);
+            MessageBlueprint blueprint = getCachedBlueprint(method, annotation);
+            return getMessage(method.getReturnType(), blueprint, normalizedArgs);
+        }
+
+        private MessageBlueprint getCachedBlueprint(Method method, MessageSpec annotation) {
+
+            Function<Method, MessageBlueprint> blueprintCreator = key -> {
+                Formatting formatting = new Formatting(annotation.pattern(), this.messageFormatter);
                 CodeBlueprint codeBlueprint = new CodeBlueprint(annotation.id(), this.codeFormatting);
                 return new BaseMessageBlueprint(codeBlueprint, formatting, properties);
-            });
+            };
 
-            return getMessage(method.getReturnType(), blueprint, normalizedArgs);
+            return this.cachedBlueprints.computeIfAbsent(method, blueprintCreator);
         }
 
         private Object invokeUnannotated(Method method, Object[] args, Map<String, String> properties)
@@ -162,7 +169,7 @@ class ProxyMessagesProvider implements MessagesProvider {
             } catch (NoSuchMethodException e) {
 
                 // If forgot to annotate
-                MessageBlueprint blueprint = this.messages.computeIfAbsent(method, key ->
+                MessageBlueprint blueprint = this.cachedBlueprints.computeIfAbsent(method, key ->
                         new UnannotatedMessageBlueprint(method, properties));
                 return getMessage(method.getReturnType(), blueprint, args);
             }
@@ -201,12 +208,19 @@ class ProxyMessagesProvider implements MessagesProvider {
             }
 
             MessageRepositoryInvocationHandler that = (MessageRepositoryInvocationHandler) invocationHandler;
-            return Objects.equals(className, that.className); // leave out the other fields
+            return Objects.equals(originalType, that.originalType); // leave out the other fields
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(this.getClass(), className); // leave out the other fields
+            return Objects.hash(this.getClass(), originalType); // leave out the other fields
+        }
+
+        public String toString() {
+            return "ProxyMessagesProvider.MessageRepositoryInvocationHandler("
+                           + "originalType=" + this.originalType.getName()
+                           + ", messageFormatter=" + this.messageFormatter + ", codeFormatting=" + this.codeFormatting
+                           + ", properties=" + this.properties + ")";
         }
     }
 

@@ -107,9 +107,9 @@ greatly appreciated. There is no established procedure for code contributions ye
 
 ### If It Does Not Compile...
 
-- This project uses [Lombok](https://projectlombok.org/) to avoid boilerplate code (toString(), equals(), hashCode(), 
-  etc.). There is no problem to build it with Maven, but to work comfortably in an IDE you will have to install a 
-  [Lombok plugin](https://projectlombok.org/setup/overview).  
+- This project uses [Lombok](https://projectlombok.org/) to avoid boilerplate code (`toString()`, `equals()`, 
+  `hashCode()`, etc.). There is no problem to build it with Maven, but to work comfortably in an IDE you will have to 
+  install a [Lombok plugin](https://projectlombok.org/setup/overview).  
 
 ### Code Style
 

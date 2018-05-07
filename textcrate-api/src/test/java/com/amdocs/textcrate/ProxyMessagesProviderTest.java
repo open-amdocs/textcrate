@@ -148,7 +148,7 @@ public class ProxyMessagesProviderTest {
         assertTrue(messages.isPresent());
         assertEquals(messages.get().toString(),
                 "ProxyMessagesProvider.MessageRepositoryInvocationHandler("
-                        + "className=com.amdocs.textcrate.ProxyMessagesProviderTest$FormattedCodeMessages, "
+                        + "originalType=com.amdocs.textcrate.ProxyMessagesProviderTest$FormattedCodeMessages, "
                         + "messageFormatter=ProxyMessagesProvider.ResilientFormatter(delegate=Slf4jFormatter()), "
                         + "codeFormatting=CodeBlueprint.Formatting(offset=2000, pattern=[APP]:{}-code, "
                         + "formatter=ProxyMessagesProvider.ResilientFormatter(delegate=Slf4jFormatter())), "
@@ -297,7 +297,7 @@ public class ProxyMessagesProviderTest {
         assertTrue(messages.isPresent());
         assertEquals(messages.get().toString(),
                 "ProxyMessagesProvider.MessageRepositoryInvocationHandler("
-                        + "className=com.amdocs.textcrate.ProxyMessagesProviderTest$TestMessages, "
+                        + "originalType=com.amdocs.textcrate.ProxyMessagesProviderTest$TestMessages, "
                         + "messageFormatter=ProxyMessagesProvider.ResilientFormatter(delegate=Slf4jFormatter()), "
                         + "codeFormatting=CodeBlueprint.Formatting(offset=0, pattern=, "
                         + "formatter=ProxyMessagesProvider.AsIsFormatter()), properties={})");
