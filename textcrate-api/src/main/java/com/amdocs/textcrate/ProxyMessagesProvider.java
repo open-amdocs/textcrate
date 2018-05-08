@@ -73,7 +73,7 @@ class ProxyMessagesProvider implements MessagesProvider {
     @Override
     public <T> Optional<T> getMessages(Class<T> clazz) {
         Object repo = Proxy.newProxyInstance(clazz.getProtectionDomain().getClassLoader(),
-                new Class[]{clazz}, new MessageRepositoryInvocationHandler(clazz));
+                new Class<?>[]{clazz}, new MessageRepositoryInvocationHandler(clazz));
         return Optional.of(clazz.cast(repo));
     }
 
@@ -175,7 +175,7 @@ class ProxyMessagesProvider implements MessagesProvider {
             }
         }
 
-        private Object getMessage(Class returnType, MessageBlueprint blueprint, Object[] args) {
+        private Object getMessage(Class<?> returnType, MessageBlueprint blueprint, Object[] args) {
 
             if (Message.class.isAssignableFrom(returnType)) {
                 return new BaseMessage(blueprint, args);

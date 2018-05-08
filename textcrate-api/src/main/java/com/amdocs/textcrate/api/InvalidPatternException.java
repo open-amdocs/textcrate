@@ -24,6 +24,8 @@ package com.amdocs.textcrate.api;
  */
 public class InvalidPatternException extends Exception {
 
+    private static final long serialVersionUID = 1L;
+
     public InvalidPatternException(String message) {
         super(message);
     }

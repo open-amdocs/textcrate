@@ -28,8 +28,10 @@
 
     <artifactId>textcrate-api</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>TextCrate Message Repositories API</name>
-    <description>Entry point for message repositories and formatting</description>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>
+        Entry point for access to message repositories, and message declaration and formatting
+    </description>
 
     <dependencies>
         <dependency>

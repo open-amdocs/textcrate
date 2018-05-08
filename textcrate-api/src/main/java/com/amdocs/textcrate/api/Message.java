@@ -53,6 +53,8 @@ public interface Message {
     /**
      * Formatting pattern in a given {@link Locale}, according to which the message is constructed.
      *
+     * @param locale desired locale; it is not recommended to send <code>null</code> here, although the exact behavior
+     *               is left up to an implementation
      * @return parametrized localized message pattern
      */
     String getPattern(Locale locale);
@@ -69,6 +71,8 @@ public interface Message {
      * Localized text of a message, build using the message's formatting pattern ({@link #getPattern(Locale)}) and
      * arguments (see {@link #getArguments()}).
      *
+     * @param locale desired locale; it is not recommended to send <code>null</code> here, although the exact behavior
+     *               is left up to an implementation
      * @return full localized text of the message
      */
     String getMessage(Locale locale);
@@ -91,6 +95,7 @@ public interface Message {
     /**
      * A custom property of the message.
      *
+     * @param name property name (key), cannot be <code>null</code>
      * @return value that corresponds to the <i>name</i> or <code>null</code> if undefined
      */
     String getProperty(String name);

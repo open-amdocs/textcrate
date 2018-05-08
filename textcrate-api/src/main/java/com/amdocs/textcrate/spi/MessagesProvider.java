@@ -30,7 +30,7 @@ import java.util.Optional;
 public interface MessagesProvider {
 
     /**
-     * <a>Returns a concrete implementation of a message repository specified by an interface.</p>
+     * Returns a concrete implementation of a message repository specified by an interface.
      *
      * @param clazz an interface that defines messages
      * @param <T> repository specification
