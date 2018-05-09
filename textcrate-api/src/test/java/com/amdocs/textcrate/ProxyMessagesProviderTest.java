@@ -17,6 +17,7 @@
 package com.amdocs.textcrate;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertTrue;
 
@@ -27,6 +28,7 @@ import com.amdocs.textcrate.api.annotations.CodeSpec;
 import com.amdocs.textcrate.api.annotations.MessageFormatter;
 import com.amdocs.textcrate.api.annotations.MessageProperty;
 import com.amdocs.textcrate.api.annotations.MessageSpec;
+import java.lang.reflect.Proxy;
 import java.util.Locale;
 import java.util.Optional;
 import org.testng.annotations.Test;
@@ -60,7 +62,8 @@ public class ProxyMessagesProviderTest {
 
     @Test
     public void proxyingMessagesSucceedsWhenInputClassUnannotated() {
-        final Optional<UnannotatedClass> messages = new ProxyMessagesProvider().getMessages(UnannotatedClass.class);
+        final Optional<UnAnnotatedMessages> messages =
+                new ProxyMessagesProvider().getMessages(UnAnnotatedMessages.class);
         assertTrue(messages.isPresent());
     }
 
@@ -215,7 +218,60 @@ public class ProxyMessagesProviderTest {
         assertTrue(messages.get().toString().startsWith("ProxyMessagesProvider.MessageRepositoryInvocationHandler("));
     }
 
-    private interface UnannotatedClass { }
+    @Test
+    public void notEqualWhenNotProxy() {
+        final Optional<UnAnnotatedMessages> messages =
+                new ProxyMessagesProvider().getMessages(UnAnnotatedMessages.class);
+        assertTrue(messages.isPresent());
+        UnAnnotatedMessages proxy = messages.get();
+        UnAnnotatedMessages concrete = new UnAnnotatedMessagesImpl();
+        //noinspection SimplifiedTestNGAssertion
+        assertFalse(proxy.equals(concrete));
+    }
+
+    @Test
+    public void notEqualWhenFromDifferentInterfaces() {
+
+        final Optional<TestMessages> one = new ProxyMessagesProvider().getMessages(TestMessages.class);
+        final Optional<FormattedCodeMessages> two =
+                new ProxyMessagesProvider().getMessages(FormattedCodeMessages.class);
+
+        assertTrue(one.isPresent());
+        assertTrue(two.isPresent());
+
+        Object messagesOne = one.get();
+        Object messagesTwo = two.get();
+
+        //noinspection SimplifiedTestNGAssertion
+        assertFalse(messagesTwo.equals(messagesOne));
+    }
+
+    @Test
+    public void notEqualWhenDifferentProxyImplementations() {
+
+        final Optional<TestMessages> messages = new ProxyMessagesProvider().getMessages(TestMessages.class);
+        assertTrue(messages.isPresent());
+
+        final ClassLoader classLoader = TestMessages.class.getProtectionDomain().getClassLoader();
+        Object otherProxy = Proxy.newProxyInstance(classLoader, new Class<?>[] {TestMessages.class},
+                (proxy, method, args) -> null);
+
+        Object messagesProxy = messages.get();
+        //noinspection SimplifiedTestNGAssertion
+        assertFalse(messagesProxy.equals(otherProxy));
+    }
+
+    @Test
+    public void notEqualWhenComparedToNull() {
+        final Optional<TestMessages> messages = new ProxyMessagesProvider().getMessages(TestMessages.class);
+        assertTrue(messages.isPresent());
+        //noinspection SimplifiedTestNGAssertion,ObjectEqualsNull,ConstantConditions
+        assertFalse(messages.get().equals(null));
+    }
+
+    private interface UnAnnotatedMessages { }
+
+    private static class UnAnnotatedMessagesImpl implements UnAnnotatedMessages { }
 
     private interface TestMessages {
 
@@ -229,7 +285,6 @@ public class ProxyMessagesProviderTest {
         @MessageSpec(id = 200, pattern = "Hi")
         void incorrectReturnType();
     }
-
 
     @CodeSpec(pattern = "[APP]:{}-code", offset = 2000)
     private interface FormattedCodeMessages {
