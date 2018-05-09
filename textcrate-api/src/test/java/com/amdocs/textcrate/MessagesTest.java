@@ -33,6 +33,8 @@ import org.testng.annotations.Test;
  */
 public class MessagesTest {
 
+    private static final String PROXY_CLASS_PREFIX = ".$Proxy";
+
     @Test(expectedExceptions = NullPointerException.class)
     public void loadingMessagesThrowsNpeWhenClassNull() {
         Messages.from(null);
@@ -40,37 +42,61 @@ public class MessagesTest {
 
     @Test
     public void loadingMessagesAlwaysReturnsSomething() {
-        assertNotNull(Messages.from(DummyMessages.class));
+        assertNotNull(Messages.from(MockMessages.class));
     }
 
     @Test
     public void loadingMessagesReturnsDynamicProxyWhenNoProviderConfigured() {
-        String implementationClass = Messages.from(DummyMessages.class).getClass().getName();
-        assertTrue(implementationClass.startsWith(this.getClass().getPackage().getName() + ".$Proxy"));
+        String implementationClass = Messages.from(MockMessages.class).getClass().getName();
+        assertTrue(implementationClass.startsWith(this.getClass().getPackage().getName() + PROXY_CLASS_PREFIX));
     }
 
     @Test
     public void loadingMessagesReturnsCustomImplementationWhenAvailable() {
 
         final String providerInterface = "META-INF/services/" + MessagesProvider.class.getName();
-        final byte[] implementationName = DummyMessagesProvider.class.getName().getBytes(StandardCharsets.UTF_8);
+        final byte[] implementationName = MockMessagesProvider.class.getName().getBytes(StandardCharsets.UTF_8);
 
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
         ServiceHelperClassLoader classLoader =
                 new ServiceHelperClassLoader(providerInterface, implementationName, contextClassLoader);
 
-        assertEquals(Messages.from(DummyMessages.class, classLoader).getClass(), DummyMessagesImpl.class);
+        assertEquals(Messages.from(MockMessages.class, classLoader).getClass(), MockMessagesImpl.class);
     }
 
-    private interface DummyMessages { /* methods not needed */}
+    @Test
+    public void loadingMessagesReturnsDynamicProxyWhenCustomProviderReturnsNothing() {
 
-    private static class DummyMessagesImpl implements DummyMessages { /* not needed */ }
+        final String providerInterface = "META-INF/services/" + MessagesProvider.class.getName();
+        final byte[] implementationName = NoMessagesProvider.class.getName().getBytes(StandardCharsets.UTF_8);
 
-    public static class DummyMessagesProvider implements MessagesProvider {
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        ServiceHelperClassLoader classLoader =
+                new ServiceHelperClassLoader(providerInterface, implementationName, contextClassLoader);
+
+        String implementationClass = Messages.from(MockMessages.class, classLoader).getClass().getName();
+        assertTrue(implementationClass.startsWith(this.getClass().getPackage().getName() + PROXY_CLASS_PREFIX));
+    }
+
+    private interface MockMessages { /* methods not needed */}
+
+    private static class MockMessagesImpl implements MockMessages { /* not needed */ }
+
+    @SuppressWarnings("WeakerAccess")
+    public static class MockMessagesProvider implements MessagesProvider {
 
         @Override
         public <T> Optional<T> getMessages(Class<T> clazz) {
-            return Optional.of(clazz.cast(new DummyMessagesImpl()));
+            return Optional.of(clazz.cast(new MockMessagesImpl()));
+        }
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    public static class NoMessagesProvider implements MessagesProvider {
+
+        @Override
+        public <T> Optional<T> getMessages(Class<T> clazz) {
+            return Optional.empty();
         }
     }
 }
