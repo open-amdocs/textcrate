@@ -54,6 +54,11 @@ public class Slf4jFormatterTest {
     }
 
     @Test(expectedExceptions = InvalidPatternException.class, expectedExceptionsMessageRegExp = EMPTY_PATTERN)
+    public void validationThrowsExceptionWhenPatternNull() throws InvalidPatternException {
+        new Slf4jFormatter().validate(null);
+    }
+
+    @Test(expectedExceptions = InvalidPatternException.class, expectedExceptionsMessageRegExp = EMPTY_PATTERN)
     public void validationThrowsExceptionWhenPatternEmptyString() throws InvalidPatternException {
         new Slf4jFormatter().validate("");
     }
@@ -94,7 +99,7 @@ public class Slf4jFormatterTest {
     }
 
     @Test
-    public void validationSucceedsWhenPlaceholderDoubleEscapedAndOneParametersGiven() throws InvalidPatternException {
+    public void validationSucceedsWhenPlaceholderDoubleEscapedAndOneParameterGiven() throws InvalidPatternException {
         new Slf4jFormatter().validate("This is a valid placeholder: \\\\{}", String.class);
     }
 

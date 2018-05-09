@@ -18,10 +18,13 @@ package com.amdocs.textcrate.formatters;
 
 import com.amdocs.textcrate.api.Formatter;
 import com.amdocs.textcrate.api.InvalidPatternException;
+import com.amdocs.textcrate.api.Validator;
 import java.lang.reflect.Type;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.slf4j.helpers.MessageFormatter;
 
@@ -39,16 +42,23 @@ import org.slf4j.helpers.MessageFormatter;
  * @since 22 Aug 17
  */
 @EqualsAndHashCode
+@NoArgsConstructor
 @ToString
-public class Slf4jFormatter implements Formatter {
+public class Slf4jFormatter implements Formatter, Validator {
 
     private static final String PLACEHOLDER = "{}";
     private static final char ESCAPE_CHAR = '\\';
-    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("(\\\\*\\" + PLACEHOLDER + ")");
+    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile(
+            Pattern.quote(Character.toString(ESCAPE_CHAR)) + "*" + Pattern.quote(PLACEHOLDER));
 
     @Override
     public String format(String pattern, Object... arguments) {
         return MessageFormatter.arrayFormat(pattern, arguments).getMessage();
+    }
+
+    @Override
+    public Optional<Validator> getValidator() {
+        return Optional.of(this);
     }
 
     @Override
@@ -90,13 +100,15 @@ public class Slf4jFormatter implements Formatter {
 
     private static boolean isUnescaped(String string) {
 
-        // only exactly one backslash counts as escaping
+        // only exactly one back-slash counts as escaping
         int count = 0;
-        int i = 0;
 
-        while (i < string.length() && string.charAt(i) == ESCAPE_CHAR) {
-            i++;
+        while (string.charAt(count) == ESCAPE_CHAR) {
+
             count++;
+            if (count > 1) {
+                return true;
+            }
         }
 
         return count != 1;

@@ -44,5 +44,5 @@ public @interface MessageFormatter {
      *
      * @return class of a formatter that will be used to substitute the placeholders of a pattern with actual values
      */
-    Class<? extends com.amdocs.textcrate.api.Formatter> type() default Slf4jFormatter.class;
+    Class<? extends Formatter> type() default Slf4jFormatter.class;
 }

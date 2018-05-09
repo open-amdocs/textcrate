@@ -14,31 +14,32 @@
  * limitations under the License.
  */
 
-package com.amdocs.textcrate.api;
+package com.amdocs.textcrate;
 
+import com.amdocs.textcrate.api.Formatter;
+import com.amdocs.textcrate.api.Validator;
 import java.util.Optional;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
- * Defines how a message should be constructed given a pattern and a list of arguments.
+ * Returns the first argument "AS IS", without using any pattern.
+ * Must be used only when there is at least one argument.
  *
  * @author evitaliy
- * @since 22 Aug 2017
+ * @since 8 May 2018
  */
-public interface Formatter {
+@EqualsAndHashCode
+@ToString
+class SingleArgumentFormatter implements Formatter {
 
-    /**
-     * Constructs a message by applying arguments to a formatting pattern.
-     *
-     * @param pattern formatting pattern
-     * @param arguments list of message arguments
-     * @return resulting message
-     */
-    String format(String pattern, Object... arguments);
+    @Override
+    public String format(String pattern, Object... arguments) {
+        return String.valueOf(arguments[0]);
+    }
 
-    /**
-     * Optionally, allows pattern validation for the formatter.
-     *
-     * @return an optional validator that matches formatting rules of the formatter
-     */
-    Optional<Validator> getValidator();
+    @Override
+    public Optional<Validator> getValidator() {
+        return Optional.empty();
+    }
 }

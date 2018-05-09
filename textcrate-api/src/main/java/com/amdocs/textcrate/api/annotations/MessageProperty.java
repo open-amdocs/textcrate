@@ -69,6 +69,7 @@ public @interface MessageProperty {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
     @interface Properties {
+        @SuppressWarnings("unused")
         MessageProperty[] value();
     }
 }

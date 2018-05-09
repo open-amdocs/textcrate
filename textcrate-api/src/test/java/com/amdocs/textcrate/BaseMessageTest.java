@@ -21,9 +21,10 @@ import static org.testng.Assert.assertNotEquals;
 
 import com.amdocs.textcrate.CodeBlueprint.Formatting;
 import com.amdocs.textcrate.api.Formatter;
-import java.lang.reflect.Type;
+import com.amdocs.textcrate.api.Validator;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.testng.annotations.Test;
@@ -83,6 +84,8 @@ public class BaseMessageTest {
         }
 
         @Override
-        public void validate(String pattern, Type... types) { /* no-op */ }
+        public Optional<Validator> getValidator() {
+            return Optional.empty();
+        }
     }
 }

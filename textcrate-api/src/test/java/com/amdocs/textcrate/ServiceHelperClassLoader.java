@@ -51,11 +51,6 @@ class ServiceHelperClassLoader extends ClassLoader {
         HANDLER.add(resourceName, resourceContent);
     }
 
-    public ServiceHelperClassLoader(Map<String, byte[]> resources, ClassLoader parent) {
-        super(parent);
-        HANDLER.addAll(resources);
-    }
-
     @Override
     public Enumeration<URL> getResources(String name) throws IOException {
         return HANDLER.contains(name)
@@ -69,14 +64,6 @@ class ServiceHelperClassLoader extends ClassLoader {
 
         private void add(String name, byte[] content) {
             resources.put(name, content);
-        }
-
-        private void addAll(Map<String, byte[]> added) {
-            this.resources.putAll(added);
-        }
-
-        byte[] get(String name) {
-            return resources.get(name);
         }
 
         boolean contains(String name) {
