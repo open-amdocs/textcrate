@@ -60,7 +60,7 @@ class ProxyMessagesProvider implements MessagesProvider {
         private <T> MessageRepositoryInvocationHandler(Class<T> clazz) {
             this.originalType = clazz;
             this.blueprintFactory = new AnnotatedMessageBlueprintFactory(clazz);
-            this.blueprintCache = new ConcurrentHashMap<>();
+            this.blueprintCache = new ConcurrentHashMap<>(clazz.getDeclaredMethods().length);
         }
 
         @Override
